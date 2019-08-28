@@ -2,7 +2,7 @@
 	"name": "davemaillist",
 	"description": "Manages the nightly mail function on Scripting News.",
 	"author": "Dave Winer <dave@scripting.com>",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"main": "maillist.js",
 	"repository": {
 		"type": "git",

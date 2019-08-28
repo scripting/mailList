@@ -1,4 +1,4 @@
-const myProductName = "davemaillist", myVersion = "0.4.0"; 
+const myProductName = "davemaillist", myVersion = "0.4.1"; 
 
 const AWS = require ("aws-sdk");
 const utils = require ("daveutils");
@@ -8,7 +8,6 @@ const fs = require ("fs");
 
 exports.sendConfirmingEmail = sendConfirmingEmail;
 exports.confirmEmailCode = confirmEmailCode;
-exports.emailUnsub = emailUnsub;
 exports.start = start;
 
 var config = {
@@ -29,14 +28,14 @@ var stats = {
 	version: myVersion,
 	ctStartups: 0,
 	whenLastStartup: new Date (0),
-	pendingConfirmations: new Array () //8/17/19 by DW
+	pendingConfirmations: new Array () 
 	};
 var flStatsChanged = false;
 
 function statsChanged () {
 	flStatsChanged = true;
 	}
-function addOrRemoveSubscription (obj, flAdd) {
+function addOrRemoveSubscription (obj) {
 	var f = config.fnameEmailPrefs, now = new Date ();
 	utils.sureFilePath (f, function () {
 		fs.readFile (f, function (err, data) {
@@ -50,7 +49,7 @@ function addOrRemoveSubscription (obj, flAdd) {
 				}
 			theList [obj.email] = {
 				when: now,
-				enabled: flAdd
+				enabled: obj.flSub
 				};
 			fs.writeFile (f, utils.jsonStringify (theList), function (err) {
 				});
@@ -77,7 +76,8 @@ function getRandomPassword (ctchars) { //NPM is refusing the recognize package u
 		}
 	return (s.toLowerCase ());
 	}
-function sendConfirmingEmail (email, urlWebApp, callback) {
+function sendConfirmingEmail (email, urlWebApp, flSub, callback) {
+	console.log ("sendConfirmingEmail: email == " + email + ", flSub == " + flSub + ", urlWebApp == " + urlWebApp);
 	var magicString = getRandomPassword (10);
 	if (utils.endsWith (urlWebApp, "#")) { //delete # at end of url if present
 		urlWebApp = utils.stringDelete (urlWebApp, urlWebApp.length, 1); 
@@ -86,14 +86,16 @@ function sendConfirmingEmail (email, urlWebApp, callback) {
 		magicString: magicString,
 		urlWebApp: urlWebApp,
 		email: email,
+		flSub: flSub,
 		when: new Date ()
 		};
 	stats.pendingConfirmations.push (obj);
 	statsChanged ();
 	console.log ("sendConfirmingEmail: obj == " + utils.jsonStringify (obj));
 	var params = {
-		title: "Please confirm your email address.",
+		title: (flSub) ? "Please confirm your email address" : "Confirm to unsubscribe",
 		blogTitle: "Scripting News",
+		operationToConfirm: (flSub) ? " your subscription" : "",
 		confirmationUrl: urlWebApp + "?emailConfirmCode=" + encodeURIComponent (magicString)
 		};
 	fs.readFile (config.fnameEmailTemplate, function (err, emailTemplate) {
@@ -103,7 +105,12 @@ function sendConfirmingEmail (email, urlWebApp, callback) {
 		else {
 			var mailtext = utils.multipleReplaceAll (emailTemplate.toString (), params, false, "[%", "%]");
 			mail.send (email, params.title, mailtext, "dave@scripting.com", function (err, data) {
-				callback (err, data);
+				if (err) {
+					callback (err);
+					}
+				else {
+					callback (undefined, obj);
+					}
 				});
 			fs.writeFile ("data/lastmail.html", mailtext, function (err) {
 				});
@@ -116,8 +123,8 @@ function confirmEmailCode (theCode, callback) {
 	stats.pendingConfirmations.forEach (function (obj) {
 		if (obj.magicString == theCode) {
 			obj.whenConfirmed = new Date ();
+			addOrRemoveSubscription (obj);
 			console.log ("confirmEmailCode: obj == " + utils.jsonStringify (obj));
-			addOrRemoveSubscription (obj, true);
 			callback (undefined, obj);
 			flfound = true;
 			}
@@ -125,8 +132,6 @@ function confirmEmailCode (theCode, callback) {
 	if (!flfound) {
 		callback ({message: "The code is not valid or has expired."});
 		}
-	}
-function emailUnsub (email, callback) {
 	}
 
 function handleHttpRequest (theRequest) {
@@ -166,13 +171,10 @@ function handleHttpRequest (theRequest) {
 					confirmEmailCode (params.emailConfirmCode, httpReturn);
 					return (true);
 				case "/confirmemail": 
-					sendConfirmingEmail (params.email, params.urlwebapp, httpReturn);
+					sendConfirmingEmail (params.email, params.urlwebapp, utils.getBoolean (params.subscribe), httpReturn);
 					return (true); 
 				case "/confirmemailcode": 
 					confirmEmailCode (params.code, httpReturn);
-					return (true); 
-				case "/emailunsub": 
-					emailUnsub (params.email, httpReturn);
 					return (true); 
 				}
 		}
@@ -236,6 +238,7 @@ function everySecond () {
 		}
 	}
 function start (configParam, callback) {
+	console.log ("\n" + myProductName + " v" + myVersion + "\n");
 	readConfig (function () {
 		if (configParam !== undefined) {
 			for (x in configParam) {
