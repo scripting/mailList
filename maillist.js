@@ -1,4 +1,4 @@
-const myProductName = "davemaillist", myVersion = "0.4.1"; 
+const myProductName = "davemaillist", myVersion = "0.4.2"; 
 
 const AWS = require ("aws-sdk");
 const utils = require ("daveutils");
@@ -16,6 +16,11 @@ var config = {
 	fnameEmailTemplate: "emailtemplate.html", 
 	ctSecsConfirmationTimeout: 5 * 60,
 	fnameEmailPrefs: "data/emailPrefs.json", 
+	blogTitle: "Scripting News", 
+	confirmSubscribeSubject: "Please confirm your email address",
+	confirmUnsubSubject: "Confirm to unsubscribe",
+	confirmOperationSubscribe: " your subscription",
+	confirmOperationUnsub: "",
 	httpPort: 1401,
 	flLogToConsole: true, 
 	flAllowAccessFromAnywhere: true, 
@@ -28,6 +33,9 @@ var stats = {
 	version: myVersion,
 	ctStartups: 0,
 	whenLastStartup: new Date (0),
+	ctHits: 0,
+	whenLastHit: new Date (0),
+	ctHitsThisRun: 0,
 	pendingConfirmations: new Array () 
 	};
 var flStatsChanged = false;
@@ -93,9 +101,9 @@ function sendConfirmingEmail (email, urlWebApp, flSub, callback) {
 	statsChanged ();
 	console.log ("sendConfirmingEmail: obj == " + utils.jsonStringify (obj));
 	var params = {
-		title: (flSub) ? "Please confirm your email address" : "Confirm to unsubscribe",
-		blogTitle: "Scripting News",
-		operationToConfirm: (flSub) ? " your subscription" : "",
+		title: (flSub) ? config.confirmSubscribeSubject : config.confirmUnsubSubject,
+		blogTitle: config.blogTitle,
+		operationToConfirm: (flSub) ? config.confirmOperationSubscribe : config.confirmOperationUnsub,
 		confirmationUrl: urlWebApp + "?emailConfirmCode=" + encodeURIComponent (magicString)
 		};
 	fs.readFile (config.fnameEmailTemplate, function (err, emailTemplate) {
@@ -137,6 +145,10 @@ function confirmEmailCode (theCode, callback) {
 function handleHttpRequest (theRequest) {
 	var params = theRequest.params;
 	
+	stats.ctHits++;
+	stats.ctHitsThisRun++;
+	stats.whenLastHit = new Date ();
+	statsChanged ();
 	
 	function returnData (jstruct) {
 		if (jstruct === undefined) {
@@ -251,6 +263,7 @@ function start (configParam, callback) {
 			stats.version = myVersion;
 			stats.whenLastStartup = new Date ();
 			stats.ctStartups++;
+			stats.ctHitsThisRun = 0;
 			statsChanged ();
 			
 			var httpConfig = {
