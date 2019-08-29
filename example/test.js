@@ -6,7 +6,6 @@ const myConfig = {
 	fnameEmailTemplate: "../emailtemplate.html"
 	};
 maillist.start (myConfig, function () {
-	console.log ("started");
 	});
 
 

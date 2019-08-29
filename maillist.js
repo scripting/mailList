@@ -1,4 +1,4 @@
-const myProductName = "davemaillist", myVersion = "0.4.2"; 
+const myProductName = "davemaillist", myVersion = "0.4.3"; 
 
 const AWS = require ("aws-sdk");
 const utils = require ("daveutils");
@@ -14,7 +14,7 @@ var config = {
 	fnameStats: "data/stats.json",
 	dataFolder: "data/", 
 	fnameEmailTemplate: "emailtemplate.html", 
-	ctSecsConfirmationTimeout: 5 * 60,
+	ctSecsConfirmationTimeout: 30 * 60,
 	fnameEmailPrefs: "data/emailPrefs.json", 
 	blogTitle: "Scripting News", 
 	confirmSubscribeSubject: "Please confirm your email address",
