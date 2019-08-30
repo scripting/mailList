@@ -1,4 +1,4 @@
-const myProductName = "davemaillist", myVersion = "0.4.3"; 
+const myProductName = "davemaillist", myVersion = "0.4.5"; 
 
 const AWS = require ("aws-sdk");
 const utils = require ("daveutils");
@@ -31,6 +31,8 @@ const fnameConfig = "config.json";
 var stats = {
 	productName: myProductName,
 	version: myVersion,
+	ctSubscriptions: 0,
+	whenLastSubscribe: new Date (0),
 	ctStartups: 0,
 	whenLastStartup: new Date (0),
 	ctHits: 0,
@@ -45,6 +47,15 @@ function statsChanged () {
 	}
 function addOrRemoveSubscription (obj) {
 	var f = config.fnameEmailPrefs, now = new Date ();
+	function countSubs (theList) {
+		var ct = 0;
+		for (var x in theList) {
+			if (theList [x].enabled) {
+				ct++;
+				}
+			}
+		return (ct);
+		}
 	utils.sureFilePath (f, function () {
 		fs.readFile (f, function (err, data) {
 			var theList = new Object ();
@@ -55,10 +66,19 @@ function addOrRemoveSubscription (obj) {
 				catch (err) {
 					}
 				}
-			theList [obj.email] = {
-				when: now,
+			var key = obj.email.toLowerCase ();
+			theList [key] = {
+				when: now.toLocaleString (),
 				enabled: obj.flSub
 				};
+			if (obj.email != key) { //it has some uppercase chars
+				theList [key].emailActual = obj.email;
+				}
+			
+			stats.ctSubscriptions = countSubs (theList); //8/30/19 by DW
+			stats.whenLastSubscribe = now;
+			statsChanged ();
+			
 			fs.writeFile (f, utils.jsonStringify (theList), function (err) {
 				});
 			});
