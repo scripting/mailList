@@ -1,4 +1,4 @@
-const myProductName = "davemaillist", myVersion = "0.4.5"; 
+const myProductName = "davemaillist", myVersion = "0.4.6"; 
 
 const AWS = require ("aws-sdk");
 const utils = require ("daveutils");
@@ -16,6 +16,7 @@ var config = {
 	fnameEmailTemplate: "emailtemplate.html", 
 	ctSecsConfirmationTimeout: 30 * 60,
 	fnameEmailPrefs: "data/emailPrefs.json", 
+	pathPrefsArchive: "data/archive/",
 	blogTitle: "Scripting News", 
 	confirmSubscribeSubject: "Please confirm your email address",
 	confirmUnsubSubject: "Confirm to unsubscribe",
@@ -80,6 +81,12 @@ function addOrRemoveSubscription (obj) {
 			statsChanged ();
 			
 			fs.writeFile (f, utils.jsonStringify (theList), function (err) {
+				});
+			
+			var farchive = config.pathPrefsArchive + utils.getDatePath (now, false) + ".json"; //11/18/19 by DW
+			utils.sureFilePath (farchive, function () {
+				fs.writeFile (farchive, utils.jsonStringify (theList), function (err) {
+					});
 				});
 			});
 		});

@@ -6,6 +6,7 @@
 	"dependencies" : {
 		"daveutils": "*",
 		"davehttp": "*",
+		"aws-sdk": "*",
 		"davemail": "*"
 		}
 	}
