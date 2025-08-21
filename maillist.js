@@ -47,25 +47,6 @@ var flStatsChanged = false;
 
 
 
-function verifyRecaptcha (captchaResponse, callback) { //8/21/25 by DW
-	request.post ({
-		url: "https://www.google.com/recaptcha/api/siteverify",
-		form: {
-			secret: config.captchaSecretKey,
-			response: captchaResponse
-			}
-		}, function (err, res, body) {
-			if (err) {
-				console.log ("verifyRecaptcha: err.message == " + err.message);
-				callback (err);
-				return;
-				}
-			console.log ("verifyRecaptcha: body == " + body);
-			const result = JSON.parse (body);
-			callback (undefined, result.success);
-			});
-	}
-
 function statsChanged () {
 	flStatsChanged = true;
 	}
@@ -190,6 +171,24 @@ function confirmEmailCode (theCode, callback) {
 	if (!flfound) {
 		callback ({message: "The code is not valid or has expired."});
 		}
+	}
+function verifyRecaptcha (captchaResponse, callback) { //8/21/25 by DW
+	request.post ({
+		url: "https://www.google.com/recaptcha/api/siteverify",
+		form: {
+			secret: config.captchaSecretKey,
+			response: captchaResponse
+			}
+		}, function (err, res, body) {
+			if (err) {
+				console.log ("verifyRecaptcha: err.message == " + err.message);
+				callback (err);
+				return;
+				}
+			console.log ("verifyRecaptcha: body == " + body);
+			const result = JSON.parse (body);
+			callback (undefined, result.success);
+			});
 	}
 
 function handleHttpRequest (theRequest) {

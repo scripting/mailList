@@ -6,6 +6,10 @@ In maillist.js it now looks for the captcha code in the params and sends them of
 
 The client side is in subscribe.scripting.com, also included below. We include a bit of code from google in the page, and when the user clicks the subscribe button we ask google what the captcha code is and send it along to the server. 
 
+captchaSecretKey is in config.json on the server.
+
+The "site key" is embedded in the html source of index.html (it's the public key).
+
 #### 8/18/25; 8:52:12 PM by DW
 
 How to hand-edit the mail list.
