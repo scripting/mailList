@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<title>Scripting News email</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="//s3.amazonaws.com/scripting.com/code/includes/jquery-1.9.1.min.js"></script>
+<link href="//s3.amazonaws.com/scripting.com/code/includes/bootstrap.css" rel="stylesheet">
+<script src="//s3.amazonaws.com/scripting.com/code/includes/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="//s3.amazonaws.com/scripting.com/code/fontawesome/css/all.css">
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700" rel="stylesheet">
+<link href="//fonts.googleapis.com/css?family=Ubuntu:400,400i,500i,700" rel="stylesheet">
+<link href="//fonts.googleapis.com/css?family=Rancho" rel="stylesheet">
+
+<script src="//s3.amazonaws.com/scripting.com/code/includes/basic/code.js?x=2"></script>
+<link href="//s3.amazonaws.com/scripting.com/code/includes/basic/styles.css" rel="stylesheet" type="text/css">
+
+		<script src="//s3.amazonaws.com/fargo.io/code/storage/api.js"></script>
+		<script src="code.js"></script>
+		<link href="styles.css" rel="stylesheet" type="text/css">
+		<!-- Facebook metadata -->
+			<meta property="og:url" content="http://scripting.com/email/" />
+			<meta property="og:type" content="website" />
+			<meta property="og:title" content="Scripting News email" />
+			<meta property="og:description" content="Every night at midnight an email goes to subscribers with the posts from scripting.com from the previous day. One email per day." />
+			<meta property="og:image" content="http://scripting.com/images/2019/08/21/kingKong.png" />
+			<meta property="og:site_name" content="Scripting News" />
+		<!-- Twitter metadata -->
+			<meta name="twitter:card" content="summary_large_image">
+			<meta name="twitter:site" content="@davewiner">
+			<meta name="twitter:title" content="Scripting News email">
+			<meta name="twitter:description" content="Every night at midnight an email goes to subscribers with the posts from scripting.com from the previous day. One email per day.">
+			<meta name="twitter:image:src" content="http://scripting.com/images/2019/08/21/kingKong.png">
+		</head>
+	<body>
+		<div class="divPageBody">
+			<h3>Scripting News email</h3>
+			<p>Enter your email address below and we'll send a confirming email.</p>
+			<table>
+				<tr>
+					<td>
+						<input class="xlarge emailInput" id="idEmailAddress" size="80" type="text" value="" placeholder="">
+						</td>
+					<td>
+						<input class="btn btn-primary btnConfirm" type="button" value="Confirm" onclick="confirmButtonClick ();">
+						</td>
+					</tr>
+				</table>
+			</div>
+		<script>
+			$(document).ready (function () {
+				startup ();
+				});
+			</script>
+		</body>
+	</html>

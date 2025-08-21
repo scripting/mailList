@@ -13,6 +13,7 @@
 		"daveutils": "*",
 		"davehttp": "*",
 		"aws-sdk": "*",
+		"request": "*",
 		"davemail": "*"
 		}
 	}

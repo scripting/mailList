@@ -4,7 +4,6 @@ const AWS = require ("aws-sdk");
 const utils = require ("daveutils");
 const mail = require ("davemail");
 const davehttp = require ("davehttp"); 
-const request = require ("request");
 const fs = require ("fs");
 
 exports.sendConfirmingEmail = sendConfirmingEmail;
@@ -26,8 +25,7 @@ var config = {
 	httpPort: 1401,
 	flLogToConsole: true, 
 	flAllowAccessFromAnywhere: true, 
-	flPostEnabled: false, 
-	captchaSecretKey: undefined //8/21/25 by DW
+	flPostEnabled: false
 	};
 const fnameConfig = "config.json";
 
@@ -44,27 +42,6 @@ var stats = {
 	pendingConfirmations: new Array () 
 	};
 var flStatsChanged = false;
-
-
-
-function verifyRecaptcha (captchaResponse, callback) { //8/21/25 by DW
-	request.post ({
-		url: "https://www.google.com/recaptcha/api/siteverify",
-		form: {
-			secret: config.captchaSecretKey,
-			response: captchaResponse
-			}
-		}, function (err, res, body) {
-			if (err) {
-				console.log ("verifyRecaptcha: err.message == " + err.message);
-				callback (err);
-				return;
-				}
-			console.log ("verifyRecaptcha: body == " + body);
-			const result = JSON.parse (body);
-			callback (undefined, result.success);
-			});
-	}
 
 function statsChanged () {
 	flStatsChanged = true;
@@ -233,21 +210,7 @@ function handleHttpRequest (theRequest) {
 					confirmEmailCode (params.emailConfirmCode, httpReturn);
 					return (true);
 				case "/confirmemail": 
-					console.log ("confirmemail: params == " + utils.jsonStringify (params));
-					verifyRecaptcha (params.captcharesponse, function (err, flVerified) { //8/21/25 by DW
-						if (err) {
-							returnError (err);
-							}
-						else {
-							if (flVerified) {
-								sendConfirmingEmail (params.email, params.urlwebapp, utils.getBoolean (params.subscribe), httpReturn);
-								}
-							else {
-								const message = "The captcha thing says you're not human. Sorry.";
-								returnError ({message});
-								}
-							}
-						});
+					sendConfirmingEmail (params.email, params.urlwebapp, utils.getBoolean (params.subscribe), httpReturn);
 					return (true); 
 				case "/confirmemailcode": 
 					confirmEmailCode (params.code, httpReturn);
@@ -256,7 +219,6 @@ function handleHttpRequest (theRequest) {
 		}
 	return (false); //we didn't handle it
 	}
-
 function readConfig (callback) {
 	utils.sureFilePath (fnameConfig, function () {
 		fs.readFile (fnameConfig, function (err, data) {
