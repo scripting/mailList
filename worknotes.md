@@ -1,3 +1,27 @@
+#### 12/31/25; 9:44:39 AM by DW
+
+Unsubbing doesn't work, when you click the link in the email, it's supposed to just do it. 
+
+Instead there's an error, possibly caused by the google add-in not having been loaded yet.
+
+So i added a short timeout before calling it, and that worked.
+
+But now there's another problem, apparently on the server side?
+
+* yes it is. it needs the captcha to be valid, and we don't pause to let the user click the captcha, so it's always wrong. 
+
+* so we have to change the flow, when we get a request to unsub we put up a message saying click the button to unsubscribe
+
+* we don't leave room to set the email address, that's part of the request.
+
+* with any luck then it will work.
+
+* this is very difficult software to test, but this is embarrassing. since we added the captcha in august because we were being spammed, no one has been able to unsub this way. probably they did what i would do, if it was too annoying i'd just block it in my email app. but overall that's not good because we get a rep for being spam, which is deserved.
+
+Also the source code for subscribe.scripting.com is in the source.opml file in the repo.
+
+* Look for -- allservers:maine:pagepark:domains:subscribe.scripting.com:
+
 #### 8/21/25; 10:44:24 AM by DW
 
 Adding a captcha to the page because we're being abused.
@@ -10,7 +34,7 @@ captchaSecretKey is in config.json on the server.
 
 The "site key" is embedded in the html source of index.html (it's the public key).
 
-#### 8/18/25; 8:52:12 PM by DW
+#### 8/18/25; 8:52:12 PM by DW -- hand-editing the mail list, it's just a json file
 
 How to hand-edit the mail list.
 
