@@ -1,3 +1,13 @@
+#### 2/1/26; 4:53:19 PM by DW
+
+subscribe.scripting.com
+
+* I made unsubbing work last time, and broke subbing. 
+
+* Made a change, we need to get the mail address from the input box when we're subbing. We were sending undefined as the email address. It broke in the 12/31 change. The only reason that broke is I had to deal with a denial of service attack, so had to add the captcha. It would be so much easier if I could use Substack.
+
+* added subscribe.scripting.com code to the github repo via the build script. Since it can have dealstopping bugs, it's time to include it in the freaking archive. ;-)
+
 #### 12/31/25; 9:44:39 AM by DW
 
 Unsubbing doesn't work, when you click the link in the email, it's supposed to just do it. 
